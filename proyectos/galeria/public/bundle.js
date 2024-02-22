@@ -1,6 +1,6 @@
 'use strict';
 
-var data = {
+var dataFotos = {
 	fotos: {
 		america: [
 			{
@@ -431,7 +431,7 @@ var data = {
 	},
 };
 
-const { fotos } = data;
+const { fotos } = dataFotos;
 
 var dataCategorias = {
 	categorias: [
@@ -446,7 +446,7 @@ var dataCategorias = {
 
 const {categorias} = dataCategorias;
 
-const contenedorCategorias = document.getElementById('categorias');
+const contenedorCategorias$1 = document.getElementById('categorias');
 
 categorias.forEach((categoria) => {
     const nuevaCategoria = document.createElement('a');
@@ -463,5 +463,69 @@ categorias.forEach((categoria) => {
     nuevaCategoria.href = '#';  
     nuevaCategoria.dataset.categoria = categoria.id;
 
-    contenedorCategorias.append(nuevaCategoria);
+    contenedorCategorias$1.append(nuevaCategoria);
+});
+
+const galeria$3 = document.getElementById('galeria');
+const cargarImagen = (id, nombre, ruta, descripcion) => {
+    galeria$3.querySelector('.galeria__imagen').src = ruta;
+    galeria$3.querySelector('.galeria__imagen').dataset.idImagen = id;
+    galeria$3.querySelector('.galeria__titulo').innerText = nombre;
+    galeria$3.querySelector('.galeria__descripcion-imagen-activa').innerText = descripcion;
+};
+
+const contenedorCategorias = document.getElementById('categorias');
+const galeria$2 = document.getElementById('galeria');
+
+contenedorCategorias.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    if (e.target.closest('a')){
+        galeria$2.classList.add('galeria--active');
+        document.body.style.overflow = 'hidden';
+
+        const categoriaActiva = e.target.closest('a').dataset.categoria;
+        const fotos = dataFotos.fotos[categoriaActiva];
+        const carousel = document.querySelector(".galeria__carousel-slides");
+
+        const {id, nombre, ruta, descripcion} = fotos[0];
+            /* Esta desestructuracion seria como esto:
+            
+            const id = fotos[0].id;
+            const nombre = fotos[0].nombre;
+            const ruta = fotos[0].ruta;
+            const descripcion = fotos[0].descripcion; */
+        cargarImagen(id, nombre, ruta, descripcion);
+
+        carousel.innerHTML = '';
+
+        fotos.forEach((foto) => {
+            const slide = `
+                <a href="#" class="galeria__carousel-slide">
+					<img class="galeria__carousel-image" src="${foto.ruta}" alt="" />
+				</a>
+            `;
+
+            galeria$2.querySelector('.galeria__carousel-slides').innerHTML += slide;
+
+            galeria$2.querySelector('.galeria__carousel-slide').classList.add('galeria__carousel-slide--active');
+        });
+    }
+});
+
+const galeria$1 = document.getElementById('galeria');
+
+const cerrarGaleria = () =>{
+    galeria$1.classList.remove('galeria--active');
+
+    document.body.style.overflow = '';
+};
+
+const galeria = document.getElementById('galeria');
+galeria.addEventListener('click', (e) => {
+    const boton = e.target.closest('button');
+
+    if (boton?.dataset?.accion === 'cerrar-galeria'){
+        cerrarGaleria();
+    }
 });
